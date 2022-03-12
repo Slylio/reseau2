@@ -11,7 +11,7 @@ public class EchoClient {
     }
 
     public static void main(String[] args) throws IOException{
-        if (args[0]=="-h" || args[0]==null){
+        if (args[0]=="-h" || args[0]==null || args.length!=2){
             System.err.println("err");
         } else {
             EchoClient echoClient = new EchoClient(args[0],Integer.parseInt(args[1]));
@@ -21,25 +21,27 @@ public class EchoClient {
     }
     
     public void run() throws IOException{
-        try {
-            System.out.println("Connexion au serveur "+host+" au port "+numSocket+"...");
-            Socket socketClient = new Socket(host, numSocket);    //on fait la connexion
+        try (
+            Socket socketClient = new Socket(host,numSocket);
+            PrintWriter out =  new PrintWriter(socketClient.getOutputStream(), true);              
+            BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+            BufferedReader in2 = new BufferedReader(new InputStreamReader(System.in))
             
-            BufferedReader in2=new BufferedReader(new InputStreamReader(System.in));    //entrées claviers
-            PrintWriter writer = new PrintWriter(socketClient.getOutputStream(), true);
-            String s=in2.readLine();
-            
-            while (!s.equals("quit")){
-                  
+        ){
+            String texte;
+            while (!(texte = in2.readLine()).equals("quit")) {
+                out.println(texte);
+                System.out.println(in.readLine());
             }
+            out.println("quit");
             socketClient.close();
-        }
-        catch (IOException e){
+        }catch (IOException e){
             System.out.println(e);
         } 
+        
     }
 
     public void help() {
-        System.out.println("Veuillez entrer en paramètre le port sur lequel vous voulez vous connecter.");
+        System.out.println("Veuillez entrer en paramètre le hostnameport sur lequel vous voulez vous connecter.");
     }
 }  

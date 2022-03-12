@@ -31,6 +31,7 @@ public class EchoServer {
                     texte = reader.readLine();//on en obtient le string
                     writer.println(texte.toUpperCase());
                 }
+                echoServ.close();
             }
 
         } catch(Exception e){
